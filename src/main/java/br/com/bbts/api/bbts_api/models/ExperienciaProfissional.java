@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,8 +46,8 @@ public class ExperienciaProfissional {
   @Column(name = "descricao", columnDefinition = "TEXT")
   private String descricao;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "usuario_id", nullable = false)
+  @ManyToOne
+  @JoinColumn
   private Usuario usuario;
 
 }
