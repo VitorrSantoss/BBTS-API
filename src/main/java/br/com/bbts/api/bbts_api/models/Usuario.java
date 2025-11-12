@@ -1,20 +1,13 @@
 package br.com.bbts.api.bbts_api.models;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.CascadeType;
+import br.com.bbts.api.bbts_api.dto.UsuarioDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -59,58 +52,20 @@ public class Usuario {
   @Pattern(regexp = "^\\(\\d{3}\\) \\d{5}-\\d{4}$|^\\d{10,11}$", message = "Telefone inválido")
   @Column(length = 20)
   private String telefone;
+  
+  // Convertendo uma entidade para um DTO
+  public UsuarioDto converterParaDto(){
 
-  // Relacionamentos
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Idioma> idiomas = new ArrayList<>();
+    UsuarioDto dto = new UsuarioDto();
 
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ExperienciaProfissional> experiencias = new ArrayList<>();
+    dto.setId(id);
+    dto.setNome(nome);
+    dto.setCpf(cpf);
+    dto.setDataNascimento(dataNascimento);
+    dto.setEmail(email);
+    dto.setTelefone(telefone);
+    
+    return dto;
 
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Certificacoes> certificacoes = new ArrayList<>();
-
-  // Metadados
-  @CreationTimestamp
-  @Column(name = "criado_em", nullable = false, updatable = false)
-  private LocalDateTime criadoEm;
-
-  @UpdateTimestamp
-  @Column(name = "atualizado_em")
-  private LocalDateTime atualizadoEm;
-
-  @Column(name = "ativo")
-  private Boolean ativo = true;
-
-  // Métodos auxiliares para relacionamentos bidirecionais
-  public void adicionarIdioma(Idioma idioma) {
-    idiomas.add(idioma);
-    idioma.setUsuario(this);
   }
-
-  public void removerIdioma(Idioma idioma) {
-    idiomas.remove(idioma);
-    idioma.setUsuario(null);
-  }
-
-  public void adicionarExperiencia(ExperienciaProfissional experiencia) {
-    experiencias.add(experiencia);
-    experiencia.setUsuario(this);
-  }
-
-  public void removerExperiencia(ExperienciaProfissional experiencia) {
-    experiencias.remove(experiencia);
-    experiencia.setUsuario(null);
-  }
-
-  public void adicionarCertificacao(Certificacoes certificacao) {
-    certificacoes.add(certificacao);
-    certificacao.setUsuario(this);
-  }
-
-  public void removerCertificacao(Certificacoes certificacao) {
-    certificacoes.remove(certificacao);
-    certificacao.setUsuario(null);
-  }
-
 }
