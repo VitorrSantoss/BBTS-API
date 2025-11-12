@@ -26,7 +26,7 @@ public class Idioma {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message = "Nome do idioma obrigatório")
+  @NotBlank(message = "Nome é obrigatório")
   @Column(nullable = false, length = 50)
   private String nome;
 
