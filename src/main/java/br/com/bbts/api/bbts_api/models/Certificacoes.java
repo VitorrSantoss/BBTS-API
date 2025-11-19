@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,15 +27,24 @@ public class Certificacoes {
   private Long id;
 
   @NotBlank(message = "Nome do curso é obrigatório")
-  @Column(name = "nome_curso", nullable = false, length = 200)
+  @Column(name = "nome", nullable = false, length = 200)
   private String nomeCurso;
 
   @NotNull(message = "Data de conclusão é obrigatória")
   @Column(name = "data_conclusao", nullable = false)
   private LocalDate dataConclusao;
 
-  @Column(name = "arquivo_certificado", length = 500)
-  private String arquivoCertificado;
+  // --- NOVOS CAMPOS PARA O PDF ---
+  @Column(name = "nome_arquivo")
+  private String nomeArquivo; // Ex: certificado_java.pdf
+
+  @Column(name = "tipo_arquivo")
+  private String tipoArquivo; // Ex: application/pdf
+
+  @Lob // Indica que é um "Large Object" (BLOB)
+  @Column(name = "dados_arquivo", columnDefinition = "LONGBLOB") // LONGBLOB para MySQL suportar arquivos maiores
+  private byte[] dadosArquivo;
+   
 
   @ManyToOne
   @JoinColumn(name = "usuario_id", nullable = false)
