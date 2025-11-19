@@ -1,10 +1,12 @@
 package br.com.bbts.api.bbts_api.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.com.bbts.api.bbts_api.models.Certificacoes;
 import br.com.bbts.api.bbts_api.repository.CertificacoesRepository;
@@ -27,9 +29,18 @@ public class CertificacoesService {
     certificacoesRepository.deleteById(id);
   }
 
-  public Certificacoes salvarCertificacoes(Certificacoes certificacoes){
-    return certificacoesRepository.save(certificacoes);
-  }
+  // --- MÉTODO ATUALIZADO ---
+  public Certificacoes salvarCertificacoes(Certificacoes certificacao, MultipartFile arquivo) throws IOException {
+    
+    // Se um arquivo foi enviado, processa-o
+    if (arquivo != null && !arquivo.isEmpty()) {
+        certificacao.setNomeArquivo(arquivo.getOriginalFilename());
+        certificacao.setTipoArquivo(arquivo.getContentType());
+        certificacao.setDadosArquivo(arquivo.getBytes());
+    }
+    
+    return certificacoesRepository.save(certificacao);
 
 
+}
 }
