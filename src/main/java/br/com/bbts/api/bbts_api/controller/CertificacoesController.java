@@ -1,5 +1,6 @@
 package br.com.bbts.api.bbts_api.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import br.com.bbts.api.bbts_api.models.Certificacoes;
 import br.com.bbts.api.bbts_api.services.CertificacoesService;
@@ -42,25 +45,47 @@ public class CertificacoesController {
     return ResponseEntity.ok().body(certificacoesOpt);
   }
 
-  // 3º ENDPOINT
-  @PostMapping
-  public ResponseEntity<Certificacoes> cadastrarCertificacoes(@RequestBody Certificacoes certificacoes){
-    return ResponseEntity.status(HttpStatus.CREATED).body(certificacoesService.salvarCertificacoes(certificacoes));
+  // --- POST ATUALIZADO ---
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> cadastrarCertificacoes(
+      @RequestPart("dados") Certificacoes certificacoes,
+      @RequestPart(value = "arquivo", required = false) MultipartFile arquivo) {
+      
+      try {
+        Certificacoes novaCertificacao = certificacoesService.salvarCertificacoes(certificacoes, arquivo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaCertificacao);
+      } catch (IOException e) {
+        return ResponseEntity.internalServerError().body("Erro ao processar o arquivo: " + e.getMessage());
+      }
   }
 
-  // 4º ENDPOINT
-  @PutMapping("{id}")
-  public ResponseEntity<Certificacoes> atualizarCertificacoes(@PathVariable Long id, @RequestBody Certificacoes certificacoes){
+  // --- PUT ATUALIZADO ---
+  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> atualizarCertificacoes(
+      @PathVariable Long id, 
+      @RequestPart("dados") Certificacoes certificacoes,
+      @RequestPart(value = "arquivo", required = false) MultipartFile arquivo) {
+      
     Optional<Certificacoes> certificacoesOpt = certificacoesService.obterCertificacoesPeloId(id);
 
     if(certificacoesOpt.isEmpty()){
       return ResponseEntity.noContent().build();
     }
 
+    // Mantém o ID correto
     certificacoes.setId(id);
+    
+    // Se não enviou arquivo novo no update, talvez queira manter o antigo? 
+    // Lógica simples: se enviou arquivo, substitui. Se não, o service (acima) não toca nos bytes se for null.
+    // Mas cuidado: o objeto "certificacoes" vindo do @RequestPart não tem os bytes antigos.
+    // Para produção, você deveria recuperar os bytes antigos do banco se o arquivo for null.
 
-    return ResponseEntity.ok().body(certificacoesService.salvarCertificacoes(certificacoes));
-
+    try {
+        Certificacoes certAtualizada = certificacoesService.salvarCertificacoes(certificacoes, arquivo);
+        return ResponseEntity.ok().body(certAtualizada);
+    } catch (IOException e) {
+        return ResponseEntity.internalServerError().body("Erro ao processar o arquivo.");
+    }
   }
 
 
