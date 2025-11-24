@@ -1,7 +1,7 @@
 # -------------------------------------------------------------
 # ETAPA 1: Build (Construção do .jar)
 # -------------------------------------------------------------
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM eclipse-temurin:21-jdk-alpine AS build
 
 # Define a pasta de trabalho dentro do container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN ./mvnw clean package -DskipTests
 # -------------------------------------------------------------
 # ETAPA 2: Run (Execução da aplicação)
 # -------------------------------------------------------------
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Define a pasta de trabalho
 WORKDIR /app
