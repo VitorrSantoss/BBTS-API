@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -41,8 +40,7 @@ public class Certificacoes {
   @Column(name = "tipo_arquivo")
   private String tipoArquivo; // Ex: application/pdf
 
-  @Lob // Indica que é um "Large Object" (BLOB)
-  @Column(name = "dados_arquivo") // LONGBLOB para MySQL suportar arquivos maiores
+  @Column(name = "dados_arquivo")
   private byte[] dadosArquivo;
    
 
