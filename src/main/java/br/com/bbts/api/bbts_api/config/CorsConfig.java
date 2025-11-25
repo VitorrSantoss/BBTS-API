@@ -13,7 +13,8 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                     "http://localhost:5500", 
                     "http://127.0.0.1:5500",
-                    "http://localhost:3000"
+                    "http://localhost:3000",
+                    "https://bbts-fod5.onrender.com"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
