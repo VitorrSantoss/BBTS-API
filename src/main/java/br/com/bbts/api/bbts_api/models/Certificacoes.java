@@ -42,7 +42,7 @@ public class Certificacoes {
   private String tipoArquivo; // Ex: application/pdf
 
   @Lob // Indica que é um "Large Object" (BLOB)
-  @Column(name = "dados_arquivo", columnDefinition = "LONGBLOB") // LONGBLOB para MySQL suportar arquivos maiores
+  @Column(name = "dados_arquivo") // LONGBLOB para MySQL suportar arquivos maiores
   private byte[] dadosArquivo;
    
 
