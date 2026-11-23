@@ -37,8 +37,15 @@ public class CertificacoesService {
         certificacao.setNomeArquivo(arquivo.getOriginalFilename());
         certificacao.setTipoArquivo(arquivo.getContentType());
         certificacao.setDadosArquivo(arquivo.getBytes());
+    } else if (certificacao.getId() != null) {
+        // Atualização sem arquivo novo: mantém o que já estava gravado.
+        certificacoesRepository.findById(certificacao.getId()).ifPresent(atual -> {
+            certificacao.setNomeArquivo(atual.getNomeArquivo());
+            certificacao.setTipoArquivo(atual.getTipoArquivo());
+            certificacao.setDadosArquivo(atual.getDadosArquivo());
+        });
     }
-    
+
     return certificacoesRepository.save(certificacao);
 
 
