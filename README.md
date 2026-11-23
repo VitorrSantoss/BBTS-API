@@ -264,6 +264,44 @@ Após iniciar a aplicação, acesse a documentação interativa:
 |--------|----------|-----------|
 | POST | `/api/cadastro/salvar-completo` | Cadastro completo com upload de arquivos |
 
+### Login
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/auth/login` | `{ email, senha, perfil: COLABORADOR \| GESTOR }`. Senhas ficam com BCrypt; senha antiga em texto puro é aceita uma vez e convertida. Quem não tem senha define a senha no primeiro acesso. |
+
+### Perfil do colaborador
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/usuarios/{id}/completo` | Dados, equipe com mínimos, competências, lacunas, jornada, idiomas, tecnologias, experiências, certificados e formação |
+| PUT | `/usuarios/{id}/competencias` | `{ sigla, nivel }`: cria ou atualiza o nível numa competência do catálogo |
+| DELETE | `/usuarios/{id}/competencias/{sigla}` | Remove a competência do usuário |
+| GET / PUT | `/usuarios/{id}/foto` | Foto de perfil (PUT multipart, campo `foto`, até 5 MB) |
+
+Lacunas e jornada não são gravadas: lacuna é cada competência mínima da equipe que o colaborador não atinge (ausente conta como nível 0), e a jornada lista os cursos dessas competências.
+
+### Equipes, competências e feedback
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/equipes?gestorId=` | Equipes (do gestor, se informado) com membros, níveis e mínimos |
+| GET | `/equipes/{id}` | Uma equipe |
+| POST | `/equipes` | `{ nome, foco, descricao?, gestorId, emails? }` |
+| POST | `/equipes/{id}/membros` | `{ emails }`: adiciona colaboradores cadastrados; devolve `adicionados` e `naoEncontrados` |
+| DELETE | `/equipes/{id}/membros/{usuarioId}` | Tira o colaborador da equipe |
+| GET / POST | `/competencias` | Catálogo SFIA (sigla, nome, categoria, nível máximo) |
+| GET | `/feedbacks?destinatarioId=` ou `?autorId=` | Feedbacks recebidos ou enviados |
+| POST | `/feedbacks` | `{ autorId, destinatarioEmail, tipo: POSITIVO \| DESENVOLVIMENTO, mensagem }` |
+| CRUD | `/formacoes` | Formação acadêmica (corpo com `usuario: { id }`) |
+| GET | `/certificacoes/{id}/arquivo` | Arquivo do certificado |
+
+Erros saem como `{ "status": 400, "message": "..." }`.
+
+### Carga inicial
+
+`config/CargaInicial.java` roda na subida e é idempotente: cadastra o catálogo SFIA e os cursos quando o catálogo está vazio e, uma única vez (quando não há equipes), cria as equipes de exemplo, define os gestores e preenche níveis, idiomas, tecnologias, experiências, formação e feedbacks dos usuários de exemplo, reaproveitando quem já existe pelo e-mail. Desligue com `CARGA_INICIAL=false`.
+
 ## 💡 Exemplos de Uso
 
 ### Cadastrar Usuário
