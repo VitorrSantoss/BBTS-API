@@ -1,10 +1,13 @@
 package br.com.bbts.api.bbts_api.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +46,22 @@ public class CertificacoesController {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok().body(certificacoesOpt);
+  }
+
+  /** Arquivo do certificado (o JSON das outras rotas não traz os bytes). */
+  @GetMapping("/{id}/arquivo")
+  public ResponseEntity<byte[]> baixarArquivo(@PathVariable("id") Long id) {
+    Optional<Certificacoes> certificacaoOpt = certificacoesService.obterCertificacoesPeloId(id);
+    if (certificacaoOpt.isEmpty() || certificacaoOpt.get().getDadosArquivo() == null) {
+      return ResponseEntity.notFound().build();
+    }
+    Certificacoes certificacao = certificacaoOpt.get();
+    String tipo = certificacao.getTipoArquivo() == null ? MediaType.APPLICATION_PDF_VALUE : certificacao.getTipoArquivo();
+    String nome = certificacao.getNomeArquivo() == null ? "certificado.pdf" : certificacao.getNomeArquivo();
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(tipo))
+        .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline().filename(nome, StandardCharsets.UTF_8).build().toString())
+        .body(certificacao.getDadosArquivo());
   }
 
   // --- POST ATUALIZADO ---

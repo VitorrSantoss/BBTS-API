@@ -2,7 +2,10 @@ package br.com.bbts.api.bbts_api.models;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,7 +43,11 @@ public class Certificacoes {
   @Column(name = "tipo_arquivo")
   private String tipoArquivo; // Ex: application/pdf
 
-  @Column(name = "dados_arquivo")
+  // LONGBLOB: sem isso o MySQL cria varbinary(255) e recusa qualquer PDF real.
+  // Fica fora do JSON; o download é em GET /certificacoes/{id}/arquivo.
+  @JsonIgnore
+  @Lob
+  @Column(name = "dados_arquivo", columnDefinition = "LONGBLOB")
   private byte[] dadosArquivo;
    
 
